@@ -1,0 +1,129 @@
+﻿/* UserInterface.cs
+ * Author: Kevin Harrison Manase
+ * Homework 1 Assignment
+ */
+
+using Ksu.Cis300.MazeLibrary;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace Ksu.Cis300.MazeSolver
+{
+    public partial class UserInterface : Form
+    {
+        private Stack<Direction> _directionStack; // Stack of directions
+        private int _rows; // number of rows in the maze
+        private int _cols; // number of cols in the maze
+        private bool[,] _isVisited; // if position was visited
+        private Direction _theDirection = new Direction(); // Initialized at North
+
+        /// <summary>
+        /// Initializes the component,
+        /// This is automatically added
+        /// by the IDE
+        /// </summary>
+        public UserInterface()
+        {
+            InitializeComponent();
+
+        }
+
+        /// <summary>
+        /// The method used to solve the maze generated
+        /// </summary>
+        private void Solve(Cell cell)
+        {
+            _directionStack = new Stack<Direction>();
+            _rows = uxMaze.MazeHeight;
+            _cols = uxMaze.MazeWidth;
+            _theDirection = Direction.North;
+            _isVisited = new bool[_rows, _cols];
+            // _isVisited[cell.Row, cell.Column] = true;
+
+            /* Checks if we are still in maze  and clear*/
+            while (uxMaze.IsInMaze(cell))
+            {
+
+                if (_theDirection == Direction.North || _theDirection == Direction.South ||
+                   _theDirection == Direction.East || _theDirection == Direction.West)
+                {
+                    if (uxMaze.IsClear(cell, _theDirection) && _isVisited[cell.Row, cell.Column] == false)
+                    {
+                        Console.WriteLine("Is clear and is not visited");
+                        uxMaze.DrawPath(cell, _theDirection);
+                        uxMaze.Step(cell, _theDirection);
+                        _directionStack.Push(_theDirection);
+                        _theDirection = Direction.North;
+                        _isVisited[cell.Row, cell.Column] = true;
+                    }
+
+                    else
+                    {
+                        if (_theDirection <= Direction.West)
+                        {
+                            Console.WriteLine("Incrementing");
+                            _theDirection++;
+                        }
+                    }
+                }
+
+                if (_theDirection != Direction.North && _theDirection != Direction.South &&
+                   _theDirection != Direction.East && _theDirection != Direction.West &&
+                    _directionStack.Count != 0)
+                {
+
+                    Console.WriteLine("Pop direction");
+                    Direction temp = _directionStack.Pop();
+                    _theDirection = temp;
+                    Cell newCell = uxMaze.ReverseStep(cell, _theDirection);
+                    uxMaze.ErasePath(cell, _theDirection);
+                    uxMaze.Step(newCell, _theDirection);
+                }
+
+                if (!uxMaze.IsClear(cell, _theDirection) && _directionStack.Count == 0)
+                {
+                    MessageBox.Show("Can't go anywhere from here");
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles new maze button event on click.
+        /// This will generate a completely new maze.
+        /// </summary>
+        /// <param name="sender">The sender object</param>
+        /// <param name="e">Event e</param>
+        private void uxButton_Click(object sender, EventArgs e)
+        {
+            uxMaze.Generate();
+        }
+
+        /// <summary>
+        /// Handles the user interaction with the maze.
+        /// This will calculate the cell where the user clicked
+        /// From the the data received, thr program will try to 
+        /// solve the maze using the location by calling the
+        /// Solve() method.
+        /// </summary>
+        /// <param name="sender">The sender object</param>
+        /// <param name="e">Mouse click handler</param>
+        private void uxMaze_MouseClick(object sender, MouseEventArgs e)
+        {
+            Cell Borders = uxMaze.GetCellFromPixel(e.Location);
+            if (uxMaze.IsInMaze(Borders))
+            {
+                uxMaze.EraseAllPaths();
+                Solve(Borders);
+                uxMaze.Invalidate();
+                Console.WriteLine("Clicked");
+            }
+
+
+        }
+
+
+    }
+}
