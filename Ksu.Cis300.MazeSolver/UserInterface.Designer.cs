@@ -34,7 +34,8 @@
             // 
             // uxMaze
             // 
-            this.uxMaze.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.uxMaze.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.uxMaze.Location = new System.Drawing.Point(12, 12);
             this.uxMaze.Name = "uxMaze";
@@ -45,10 +46,12 @@
             // 
             // uxButton
             // 
-            this.uxButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.uxButton.Location = new System.Drawing.Point(247, 284);
+            this.uxButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.uxButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.uxButton.Location = new System.Drawing.Point(227, 270);
+            this.uxButton.MinimumSize = new System.Drawing.Size(131, 37);
             this.uxButton.Name = "uxButton";
-            this.uxButton.Size = new System.Drawing.Size(75, 23);
+            this.uxButton.Size = new System.Drawing.Size(131, 37);
             this.uxButton.TabIndex = 1;
             this.uxButton.Text = "New Maze";
             this.uxButton.UseVisualStyleBackColor = true;

@@ -40,53 +40,47 @@ namespace Ksu.Cis300.MazeSolver
             _cols = uxMaze.MazeWidth;
             _theDirection = Direction.North;
             _isVisited = new bool[_rows, _cols];
-           // _isVisited[cell.Row, cell.Column] = true;
+            _isVisited[cell.Row, cell.Column] = true;
 
             /* Checks if we are still in maze  and clear*/
             while (uxMaze.IsInMaze(cell))
             {
 
-                if (_theDirection == Direction.North || _theDirection == Direction.South ||
-                   _theDirection == Direction.East || _theDirection == Direction.West)
+                if (_theDirection <= Direction.West)
                 {
-                    if (uxMaze.IsClear(cell, _theDirection) && _isVisited[cell.Row, cell.Column] == false)
+                    if (uxMaze.IsClear(cell, _theDirection) && ((uxMaze.IsInMaze(uxMaze.Step(cell, _theDirection))==false ||
+                         _isVisited[uxMaze.Step(cell, _theDirection).Row,uxMaze.Step(cell, _theDirection).Column]==false)))
                     {
                         Console.WriteLine("Is clear and is not visited");
                         uxMaze.DrawPath(cell, _theDirection);
-                        uxMaze.Step(cell, _theDirection);
+                        _isVisited[cell.Row, cell.Column] = true;
+                        cell = uxMaze.Step(cell, _theDirection);
                         _directionStack.Push(_theDirection);
                         _theDirection = Direction.North;
-                        _isVisited[cell.Row, cell.Column] = true;
                     }
 
                     else
                     {
-                        if (_theDirection < Direction.West)
+                        if (_theDirection <= Direction.West)
                         {
                             Console.WriteLine("Incrementing");
                             _theDirection++;
-                            break;
+                            
                         }
                     }
                 }
 
-                if ((_theDirection != Direction.North || _theDirection != Direction.South ||
-                    _theDirection != Direction.East  || _theDirection != Direction.East))
+                if (_theDirection > Direction.West &&
+                    _directionStack.Count != 0)
                 {
-                    if (_directionStack.Count != 0)
-                    {
-                        Console.WriteLine("Pop direction");
-                        Direction temp = _directionStack.Pop();
-                        _theDirection = temp;
-                        Cell newCell = uxMaze.ReverseStep(cell, _theDirection);
-                        uxMaze.ErasePath(cell, _theDirection);
-                        uxMaze.Step(newCell, _theDirection);
-                    }
+                    Console.WriteLine("Pop direction");
+                    _theDirection = _directionStack.Pop();
+                    cell = uxMaze.ReverseStep(cell, _theDirection);
+                    uxMaze.ErasePath(cell, _theDirection);
+                    _theDirection++;
                 }
 
-                if (!uxMaze.IsClear(cell, _theDirection) && (_theDirection != Direction.North && 
-                    _theDirection != Direction.South && _theDirection != Direction.East && 
-                    _theDirection != Direction.East) && _directionStack.Count == 0)
+                if (_theDirection > Direction.West && _directionStack.Count == 0)
                 {
                     MessageBox.Show("Can't go anywhere from here");
                     break;
