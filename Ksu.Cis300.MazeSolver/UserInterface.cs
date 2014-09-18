@@ -13,7 +13,7 @@ namespace Ksu.Cis300.MazeSolver
 {
     public partial class UserInterface : Form
     {
-        private Stack<Direction> _directionStack = new Stack<Direction>(); // Stack of directions
+        private Stack<Direction> _directionStack; // Stack of directions
         private int _rows; // number of rows in the maze
         private int _cols; // number of cols in the maze
         private bool[,] _isVisited; // if position was visited
@@ -35,10 +35,12 @@ namespace Ksu.Cis300.MazeSolver
         /// </summary>
         private void Solve(Cell cell)
         {
+            _directionStack = new Stack<Direction>();
             _rows = uxMaze.MazeHeight;
             _cols = uxMaze.MazeWidth;
             _theDirection = Direction.North;
             _isVisited = new bool[_rows, _cols];
+           // _isVisited[cell.Row, cell.Column] = true;
 
             /* Checks if we are still in maze  and clear*/
             while (uxMaze.IsInMaze(cell))
@@ -59,25 +61,27 @@ namespace Ksu.Cis300.MazeSolver
 
                     else
                     {
-                        if (_theDirection <= Direction.West)
+                        if (_theDirection < Direction.West)
                         {
                             Console.WriteLine("Incrementing");
                             _theDirection++;
+                            break;
                         }
                     }
                 }
 
                 if ((_theDirection != Direction.North || _theDirection != Direction.South ||
-                    _theDirection != Direction.East  || _theDirection != Direction.East) &&
-                    _directionStack.Count != 0)
+                    _theDirection != Direction.East  || _theDirection != Direction.East))
                 {
-                    Console.WriteLine("Pop direction");
-                    Direction temp = _directionStack.Pop();
-                    _theDirection = temp;
-                    Cell newCell = uxMaze.ReverseStep(cell, _theDirection);
-                    uxMaze.ErasePath(newCell, _theDirection);
-                    uxMaze.Step(newCell, _theDirection);
-
+                    if (_directionStack.Count != 0)
+                    {
+                        Console.WriteLine("Pop direction");
+                        Direction temp = _directionStack.Pop();
+                        _theDirection = temp;
+                        Cell newCell = uxMaze.ReverseStep(cell, _theDirection);
+                        uxMaze.ErasePath(cell, _theDirection);
+                        uxMaze.Step(newCell, _theDirection);
+                    }
                 }
 
                 if (!uxMaze.IsClear(cell, _theDirection) && (_theDirection != Direction.North && 
@@ -112,8 +116,7 @@ namespace Ksu.Cis300.MazeSolver
         /// <param name="e">Mouse click handler</param>
         private void uxMaze_MouseClick(object sender, MouseEventArgs e)
         {
-            Point Mouse = e.Location;
-            Cell Borders = uxMaze.GetCellFromPixel(Mouse);
+            Cell Borders = uxMaze.GetCellFromPixel(e.Location);
             if (uxMaze.IsInMaze(Borders))
             {
                 uxMaze.EraseAllPaths();
